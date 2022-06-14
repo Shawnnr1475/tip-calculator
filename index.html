@@ -5,40 +5,193 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- displays site properly based on user's device -->
 
   <link rel="icon" type="image/png" sizes="32x32" href="./images/favicon-32x32.png">
+
+  <link rel="stylesheet" href="styles.css">
   
   <title>Frontend Mentor | Tip calculator app</title>
 
-  <!-- Feel free to remove these styles or customise in your own stylesheet 👍 -->
-  <style>
-    .attribution { font-size: 11px; text-align: center; }
-    .attribution a { color: hsl(228, 45%, 44%); }
-  </style>
 </head>
 <body>
 
-  Bill
+  <main>
+    <p>SPLI<span>TTER</span></p>
+    <div class="splitter-container">
+      <div class="left-container">
+        <div class="input-bill-container">
+          <label>Bill</label>
+          <input class="input" type="number" placeholder="0">
+          <span><img src="./images/icon-dollar.svg" alt=""></span>
+        </div>
+        <div class="select-tip-container">
+          <label>Select Tip %</label>
+          <div class="tips-container">
+            <button class="tip"> 5%</button>
+            <button class="tip">10%</button>
+            <button class="tip">15%</button>
+            <button class="tip">25%</button>
+            <button class="tip">50%</button>          
+            <input class="custom-btn" placeholder="Custom"/> 
+          </div>         
+        </div>
+        <div class="number-of-people-contianer">
+          <label>Number of People <span>Can't be zero</span></label>
+          <input class="input" type="number" placeholder="0">
+          <span><img src="./images/icon-person.svg" alt=""></span>
+        </div>
+      </div>
+      <div class="right-container">
+        <div class="tip-amount-container">
+          <label>Tip Amount<span>/ person</span></label>
+          <p>$0.00</p>
+        </div>
+        <div class="total-container">
+          <label>Total<span>/ person</span></label>
+          <p>$0.00</p>
+        </div>
+        <button type="button">RESET</button>
+      </div>
+    </div>
+    <footer class="attribution">
+      Challenge by <a href="https://www.frontendmentor.io?ref=challenge" target="_blank">Frontend Mentor</a>. 
+      Coded by <a href="#">Shawn Radebe</a>.
+    </footer>
+  </main>
+  <script>
 
-  Select Tip %
-  5%
-  10%
-  15%
-  25%
-  50%
-  Custom
+    const customBtn = document.querySelector(".custom-btn")
 
-  Number of People
+    customBtn.addEventListener("click",()=>{
+      customBtn.classList.toggle("active")
+      if(customBtn.classList.contains("active")){
+        customBtn.setAttribute("placeholder","0")
+      }
+      onClickTip()
 
-  Tip Amount
-  / person
+    })
 
-  Total
-  / person
+    customBtn.addEventListener("change",()=>{
+      tipPercentage = parseInt(customBtn.value)
 
-  Reset
-  
-  <div class="attribution">
-    Challenge by <a href="https://www.frontendmentor.io?ref=challenge" target="_blank">Frontend Mentor</a>. 
-    Coded by <a href="#">Your Name Here</a>.
-  </div>
+      setTotalPP.innerHTML = "$" + TotalPerPerson()
+      setTotalTipPP.innerHTML = "$" + TotalTipPerPerson()
+      activeRestBtn()
+      
+    })
+
+    const billInput = document.querySelector(".input-bill-container input")
+    const spanAfter = document.querySelector(".number-of-people-contianer > label span")
+    const inputNOP = document.querySelector(".number-of-people-contianer > input")
+    const tips = document.querySelectorAll(".tip")
+    const setTotalTipPP = document.querySelector(".tip-amount-container > p")
+    const setTotalPP = document.querySelector(".total-container > p")
+    const restBtn = document.querySelector(".right-container > button")
+
+
+    let billValue = 0.00
+    let tipPercentage = 0.00
+    let NOPValue = 0.00
+
+    tips.forEach(tip=>{
+      tip.addEventListener("click",()=>{
+        onClickTip()
+        tip.classList.toggle("active")
+        tipPercentage = parseInt(tip.innerHTML.replace("%",""))
+
+        setTotalPP.innerHTML = "$" + TotalPerPerson()
+        setTotalTipPP.innerHTML = "$" + TotalTipPerPerson()
+        activeRestBtn()
+        
+      })
+    })
+
+
+    billInput.addEventListener("change",()=>{onChangeBillInput()})
+    inputNOP.addEventListener("change",()=>{onChangeNOP()})
+    restBtn.addEventListener("click",()=>{restBtnOnClick()})
+
+
+    function onClickTip(){
+      tips.forEach(tip=>{
+        tip.classList.remove("active")
+      })
+
+    }
+
+    function restBtnOnClick(){
+      restBtn.style.backgroundColor = "var(--rest-btn)"
+      billInput.value=""
+      NOPValue.value = ""
+      onClickTip() // Defualt for tips
+      customBtn.value = ""
+      customBtn.classList.remove("active")
+      inputNOP.value = ""
+
+      billValue = 0
+      tipPercentage = 0
+      NOPValue = 0
+
+      setTotalPP.innerHTML = "$" + TotalPerPerson()
+      setTotalTipPP.innerHTML = "$" + TotalTipPerPerson()
+    }
+
+    function activeRestBtn(){
+      restBtn.style.backgroundColor = "var(--strong-cyan)"
+    }
+
+    function onChangeBillInput(){
+    
+      billValue = parseFloat(billInput.value).toFixed(2)
+      if(!(inputNOP.classList.contains("active")) && (inputNOP.value === "" || inputNOP.value === "0")){
+        inputNOP.classList.add("active")
+        spanAfter.style.display = "block"
+      }
+
+        
+      setTotalPP.innerHTML = "$" + TotalPerPerson()
+      setTotalTipPP.innerHTML = "$" + TotalTipPerPerson()
+      activeRestBtn()
+    }
+    
+
+    function onChangeNOP(){
+      NOPValue = inputNOP.value !== "" ? parseInt(inputNOP.value):0
+      if(NOPValue !== 0){
+        spanAfter.style.display = "none"
+        inputNOP.classList.remove("active")
+      }
+      else{
+        onChangeBillInput()
+      }
+
+      setTotalPP.innerHTML = "$" + TotalPerPerson()
+      setTotalTipPP.innerHTML = "$" + TotalTipPerPerson()
+      activeRestBtn()
+    }
+
+    function TotalTipPerPerson(){
+      let totalTipPP = "0.00"
+
+      if(NOPValue !== 0){
+        totalTipPP = parseFloat((billValue * (tipPercentage/100))/NOPValue).toFixed(2)
+        if(totalTipPP === 0){
+          totalTipPP = "0.00"
+        }
+      }
+      return(totalTipPP)
+    }
+    
+    
+    function TotalPerPerson(){
+      let totalPP = "0.00"
+
+      if(NOPValue !== 0){
+        totalPP = parseFloat((billValue * ((tipPercentage + 100)/100))/NOPValue).toFixed(2)
+        if(totalPP === 0){
+          totalPP = "0.00"
+        }
+      }
+      return(totalPP)
+    }
+  </script>
 </body>
 </html>
